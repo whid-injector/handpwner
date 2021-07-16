@@ -73,7 +73,7 @@ def tcp_scan(ip):
                     resp = data.hex()[10:]
                     model = resp[0:2]
                     if model == '00':
-                        print('[!] Found a HP-2000 model')
+                        print('[!] Found a HP-1000/HP-2000 model')
                     elif model == '01':
                         print('[!] Found a HP-3000 model')            
                     elif model == '02':
