@@ -74,16 +74,22 @@ def tcp_scan(ip):
                     model = resp[0:2]
                     if model == '00':
                         print('[!] Found a HP-1000/HP-2000 model')
+                        time.sleep(2)
                     elif model == '01':
-                        print('[!] Found a HP-3000 model')            
+                        print('[!] Found a HP-3000 model')
+                        time.sleep(2)
                     elif model == '02':
                         print('[!] Found a HP-4000 model')
+                        time.sleep(2)
                     elif model == '03':
                         print('[!] Found a HP-CR model')
+                        time.sleep(2)
                     elif model == '04':
                         print('[!] Found a HK-2 model')
+                        time.sleep(2)
                     else :
                         print('UKNOWN MODEL!')
+                        time.sleep(2)
                     resp = data.hex()[54:]
                     modelname = resp[0:34]
                     print ('[!] Model Name: ' + bytearray.fromhex(modelname).decode())
