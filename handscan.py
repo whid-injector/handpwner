@@ -100,6 +100,7 @@ def tcp_scan(ip):
                     tcp.close()
                 except socket.error:
                     #print("[!] No device with address: " + address)
+                    address = format(x, '#04x')[2:]
                     logging.info('[!] No device with address: ' + address)
                     tcp.close()
                     
