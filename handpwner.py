@@ -73,7 +73,7 @@ def dumpLogs(host,port,howMany):
             tcp.close()
         except socket.error:
             #print("[!] No device with address: " + address)
-            logging.info('[!] No device with address: ' + address)
+            logging.info('[!] No device with address: ' + host)
             tcp.close()
 
 
@@ -90,6 +90,8 @@ def sendMessage(message,host,port):
     time.sleep(1)
     mySocket.close()
 
+### LBO TODO: Add handling different Handpunch Addresses respect the default 00!!!!
+    
 def presetBackdoor(host,port,template):
     # My Hand Template 6875748268787c6085
     # You need a similar template generated from a similar Handpunch model
