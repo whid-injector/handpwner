@@ -90,6 +90,7 @@ def dumpLogs(host,port,howMany):
             EmployeeID = eID[0:10]
             print ('[!] EmployeeID: ' + EmployeeID + '\n')
             tcp.close()
+            time.sleep(1)
         except socket.error:
             #print("[!] No device with address: " + address)
             logging.info('[!] No device with address: ' + host)
