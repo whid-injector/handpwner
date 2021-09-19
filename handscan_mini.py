@@ -40,7 +40,7 @@ def tcp_scan(ip,port):
             print('[!] %s:%d/TCP Open' % (ip, port))
             tcp.close()
             time.sleep(1)
-	    #This loop is here because we the target device has 1byte called Address that can be in a range 0~254. Therefore for each of these integers we need to generate a packet with valid CRC.
+	    #This loop is here because the target device has 1byte called "address" that can be in a range 0~254. Therefore for each of these integers we need to generate a packet with valid CRC.
             for x in range(0,254):
                 try:
 		    #This is the Wake-Up Packet (This must be sent to wake up the target BEFORE sending the next CMDs!!!): ff 0a 00 44 00 08 c1 ff
