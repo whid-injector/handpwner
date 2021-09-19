@@ -8,7 +8,6 @@ from binascii import unhexlify
 import argparse
 import logging
 
-
 def crcCalc(payload):
     s = unhexlify(payload)
     crc16 = crcmod.predefined.Crc('xmodem')
@@ -20,29 +19,13 @@ def crcCalc(payload):
     packet='ff0a'+payload+newhex+'ff'
     return packet
 
-    # if (int(len(payload)/2) % 2) == 0:
-    #    print("{0} is Even and needs FF padding".format(payload))
-    #    packet='ff0a'+payload+newhex+'ff'
-    #    #print(packet)
-    #    return packet
-    # else:
-    #    print("{0} is Odd".format(payload))
-    #    packet='ff0a'+payload+newhex
-    #    #print('packet)
-    #    return packet
-
-
-
 def scanRange(network,port):
     """ Starts a TCP scan on a given IP address range """
-
     print('[*] Starting TCP port scan on network %s.0' % network)
-
     # Iterate over a range of host IP addresses and scan each target
-    for host in range(1, 255): #1, 255 ### LBO: TO ROLLBACK!!!
+    for host in range(1, 255):
         ip = network + '.' + str(host)
         tcp_scan(ip,port)
-
     print('[*] TCP scan on network %s.0 complete' % network)
 
 
@@ -52,22 +35,17 @@ def tcp_scan(ip,port):
         socket.setdefaulttimeout(0.01)
         # Create a new socket
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-            # Print if the port is open
+        # Print if the port is open
         if not tcp.connect_ex((ip, port)):
             print('[!] %s:%d/TCP Open' % (ip, port))
             tcp.close()
             time.sleep(1)
-            for x in range(0,5):
-            #for x in range(0,254):
+	    #This loop is here because we the target device has 1byte called Address that can be in a range 0~254. Therefore for each of these integers we need to generate a packet with valid CRC.
+            for x in range(0,254):
                 try:
-		
-		    #(SendStatusCRC) A.K.A. Wake-Up Packet (This must be sent to wake up the target BEFORE sending the next CMDs!!!)
-		    #ff 0a 00 44 00 08 c1 ff
-		    #[HereIsStatus] SysStat0 1 byte, SysStat1 1 byte, MonStat 1 byte
-		    #ff 0a ff 30 03 00 92 1f  da 5e
-		    #echo -n -e "\xff\x0a\x00\x44\x00\x08\xc1\xff" | nc -q1 192.168.2.212 3001
-
+		    #This is the Wake-Up Packet (This must be sent to wake up the target BEFORE sending the next CMDs!!!): ff 0a 00 44 00 08 c1 ff
+		    #This is the reply from the target device: ff 0a ff 30 03 00 92 1f  da 5e
+		    #Quick test: echo -n -e "\xff\x0a\x00\x44\x00\x08\xc1\xff" | nc -q1 192.168.2.212 3001
                     socket.setdefaulttimeout(1.5)
                     tcp = socket.socket()
                     tcp.connect((ip, port))
@@ -78,17 +56,16 @@ def tcp_scan(ip,port):
                     tcp.send(pktz)
                     dataz = tcp.recv(1024)
                     dataz.hex()
-                    #print(binascii.hexlify(dataz))
                     tcp.close()
                     time.sleep(1)
-
+		    #This is the packet that queries for the specific model name
 		    #echo -n -e "\xff\x0a\x00\x73\x00\x0a\x5d\xff" | nc -q1 192.168.2.212 3001
                     socket.setdefaulttimeout(1.5)
                     tcp = socket.socket()
                     tcp.connect((ip, port))
                     address = format(x, '#04x')[2:]
                     logging.debug('[+] Address to be scanned: '+address)
-                    pkt=bytes.fromhex(crcCalc(address+'7300'))#.lower()
+                    pkt=bytes.fromhex(crcCalc(address+'7300'))
                     logging.debug('[+] Final Packet to be sent: '+crcCalc(address+'7300').lower())
                     tcp.send(pkt)
                     data = tcp.recv(1024)
@@ -117,13 +94,8 @@ def tcp_scan(ip,port):
                     modelname = resp[0:34]
                     print ('[!] Model Name: ' + bytearray.fromhex(modelname).decode())
                     print('[!] Handpunch Address: '+ address +'\n')
-                    #print(data)
-                    #print(binascii.hexlify(data))
-                    #print(re.findall("[^\x00-\x1F\x7F-\xFF]{4,}", str(data)))
                     tcp.close()
                 except socket.error:
-                    #print("[!] No device with address: " + address)
-                    ####LBO: DONE this address is not declared yet!!! 
                     address = format(x, '#04x')[2:]
                     logging.debug('[!] No device with address: ' + address)
                     tcp.close()
