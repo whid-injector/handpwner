@@ -41,11 +41,11 @@ def tcp_scan(ip,port):
             print('[!] %s:%d/TCP Open' % (ip, port))
             tcp.close()
             time.sleep(1)
-	    found = 0
+            found = 0
 	    #This loop is here because the target device has 1byte called "address" that can be in a range 0~254. Therefore for each of these integers we need to generate a packet with valid CRC.
             for x in range(0,254):
                 try:
-		    if found=0:
+                    if found==0:
 		        #This is the Wake-Up Packet (This must be sent to wake up the target BEFORE sending the next CMDs!!!): ff 0a 00 44 00 08 c1 ff
 		        #This is the reply from the target device: ff 0a ff 30 03 00 92 1f  da 5e
 		        #Quick test: echo -n -e "\xff\x0a\x00\x44\x00\x08\xc1\xff" | nc -q1 192.168.2.212 3001
@@ -77,27 +77,27 @@ def tcp_scan(ip,port):
                         model = resp[0:2]
                         if model == '00':
                             print('<#> Found a HP-1000/HP-2000 model')
-		            found = 1
+                            found = 1
                             time.sleep(2)
                         elif model == '01':
                             print('<#> Found a HP-3000 model')
-		            found = 1
+                            found = 1
                             time.sleep(2)            
                         elif model == '02':
                             print('<#> Found a HP-4000 model')
-		            found = 1
+                            found = 1
                             time.sleep(2)
                         elif model == '03':
                             print('<#> Found a HP-CR model')
-		            found = 1
+                            found = 1
                             time.sleep(2)
                         elif model == '04':
                             print('<#> Found a HK-2 model')
-		            found = 1
+                            found = 1
                             time.sleep(2)
                         else :
                             print('UKNOWN MODEL!')
-		            found = 1
+                            found = 1
                             time.sleep(2)
                         resp = data.hex()[54:]
                         modelname = resp[0:34]
